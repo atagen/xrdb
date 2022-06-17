@@ -1,6 +1,6 @@
-use crate::x11api::{XDisplay, get_xrm_resource};
-use x11::xlib::{XrmDatabase, XResourceManagerString, XrmGetStringDatabase, XrmDestroyDatabase};
+use crate::x11api::{get_xrm_resource, XDisplay};
 use scopeguard::defer;
+use x11::xlib::{XResourceManagerString, XrmDatabase, XrmDestroyDatabase, XrmGetStringDatabase};
 
 /// A struct for representing the colours found in the X Resource Manager's database.
 #[derive(Clone, Debug, Default)]
@@ -27,8 +27,8 @@ impl Colors {
     ///
     /// If any of those keys are missing, the corresponding field will be set to None.
     pub fn new<'a>(class: &'a str) -> Option<Self> {
-        let display = XDisplay::new()
-            .expect("Failed to acquire X display!");
+        let display = XDisplay::new().ok()?;
+
         unsafe {
             let rms = XResourceManagerString(*display);
             if !rms.is_null() {
@@ -50,15 +50,29 @@ impl Colors {
         let bg = get_xrm_resource(db, class, "background").map(|s| String::from(s));
         let cursor = get_xrm_resource(db, class, "cursorColor").map(|s| String::from(s));
         let color_names = (0..16).map(|i| format!("color{}", i));
-        let colors = color_names.map(|s| get_xrm_resource(db, class, &s).map(|s| String::from(s))).collect::<Vec<_>>();
+        let colors = color_names
+            .map(|s| get_xrm_resource(db, class, &s).map(|s| String::from(s)))
+            .collect::<Vec<_>>();
         xcolors.fg = fg;
         xcolors.bg = bg;
         xcolors.cursor = cursor;
         xcolors.colors = [
-            colors[0].clone(), colors[1].clone(), colors[2].clone(), colors[3].clone(),
-            colors[4].clone(), colors[5].clone(), colors[6].clone(), colors[7].clone(),
-            colors[8].clone(), colors[9].clone(), colors[10].clone(), colors[11].clone(),
-            colors[12].clone(), colors[13].clone(), colors[14].clone(), colors[15].clone(),
+            colors[0].clone(),
+            colors[1].clone(),
+            colors[2].clone(),
+            colors[3].clone(),
+            colors[4].clone(),
+            colors[5].clone(),
+            colors[6].clone(),
+            colors[7].clone(),
+            colors[8].clone(),
+            colors[9].clone(),
+            colors[10].clone(),
+            colors[11].clone(),
+            colors[12].clone(),
+            colors[13].clone(),
+            colors[14].clone(),
+            colors[15].clone(),
         ];
         xcolors
     }
