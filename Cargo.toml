@@ -1,12 +1,12 @@
 [package]
 name = "xrdb"
 description = "A very rudimentary library to access xrdb values from Rust"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Tim Alberdingk Thijm <tim.thijm@gmail.com>"]
 edition = "2018"
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/alberdingk-thijm/xrdb"
+repository = "https://github.com/atagen/xrdb"
 
 [dependencies]
 x11 = { version = "2.18", features = ["xlib"] }
